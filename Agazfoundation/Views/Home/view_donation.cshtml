@@ -1,0 +1,171 @@
+﻿@model List<Agazfoundation.Models.add_donation>
+
+@{
+    ViewBag.Title = "view_donation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<style>
+    .styled-table {
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        min-width: 400px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+        .styled-table thead tr {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+        }
+
+        .styled-table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+            .styled-table tbody tr:nth-of-type(even) {
+                background-color: #f3f3f3;
+            }
+
+            .styled-table tbody tr:last-of-type {
+                border-bottom: 2px solid #009879;
+            }
+
+            .styled-table tbody tr.active-row {
+                font-weight: bold;
+                color: #009879;
+            }
+            .filterbox {
+               
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                max-width:800px
+            }
+            .inputbox h1 {
+                font-size: 16px;
+                font-weight: bolder;
+            }
+            .filterbox button {
+                height: 35px;
+                /* position: absolute; */
+                margin-top: 97px;
+                margin-right:10px;
+                width:80px;
+            }
+            .filterbox select {
+                height: 32px;
+                width: 136px;s
+            }
+</style>
+
+@using (Html.BeginForm("view_donation", "home", FormMethod.Post))
+{
+
+    <div class="filterbox">
+        <div class="inputbox">
+            <h1 class="heading">Isactive Status</h1>
+            <select id="drpstatus" name="status" @(TempData["status"] != null && TempData["status"].ToString() != "" ? "data-select=" + TempData["status"] + "" : "")>
+                <option value="">Select Type</option>
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+
+
+            </select>
+        </div>
+
+        @*<div class="inputbox">
+                <h1 class="heading">Created On</h1>
+                <input type="text" id="txtdeparture_from" class="form-control" name="departurefrom" placeholder="dd/mm/yyyy" value='@TempData["defrom"]'>
+            </div>*@
+
+        <div class="inputbox">
+            <h1 class="heading">Search BY Donor Name</h1>
+            <input type="text" id="txtname" class="form-control" value='@TempData["name"]' name="name" placeholder="Enter Company Name">
+        </div>
+
+        <div class="inputbox">
+            <h1 class="heading">Search BY Country Name</h1>
+            <input type="text" id="txtname" class="form-control" value='@TempData["countryname"]' name="countryname" placeholder="Enter Country Name">
+        </div>
+        <button type="submit" class="submitbtn" id="btnfilter">Filter</button>
+    </div>
+
+}
+
+
+<h2>View Donation</h2>
+
+<div id="val"></div>
+<div class="container">
+    <table class="styled-table" id="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Father Name</th>
+                <th>Contact No.</th>
+                <th>Country</th>
+                <th>City</th>
+                <th>Amount Donate</th>
+                <th>Amount Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var item in Model)
+                {
+
+                    <tr>
+                        <td>@item.fname  @item.lname</td>
+                        <td>@item.fathername</td>
+                        <td>@item.phone</td>
+                        <td>@item.country</td>
+                        <td>@item.city</td>
+                        <td>@item.amount</td>
+                        <td>@item.amount_type</td>
+                        <td>
+                            <a href="/home/Add_donation?id=@(item.id)"><i class="fas fa-solid fa-pen-to-square"></i></a>
+                            <a href="/home/delete_donation?id=@(item.id)" onclick="return confirm('Are you sure want to delete this blog?');"><i class="fas fa-regular fa-trash"></i></a>
+                            <a href="/home/email_donation?id=@(item.id)">Email</a>
+                            <a href="/home/donation_reciept?id=@(item.id)">Reciept</a>
+                        </td>
+
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    var table = document.getElementById("table"), sumVal = 0;
+
+    for (var i = 1; i < table.rows.length; i++) {
+        sumVal = sumVal + parseInt(table.rows[i].cells[5].innerHTML);
+    }
+
+    document.getElementById("val").innerHTML = "Total Collection = " + sumVal;
+
+
+</script>
+
+<script>
+    $("[data-select]").each(function () {
+        var obj = $(this);
+        obj.val(obj.attr("data-select"))
+    });
+</script>
